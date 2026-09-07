@@ -181,9 +181,9 @@ export default function App() {
       </header>
 
       {/* --------------------------------- body ---------------------------- */}
-      <div className="grid min-h-0 flex-1 max-lg:grid-rows-[48dvh_minmax(0,1fr)] lg:grid-cols-[228px_1fr_368px]">
+      <div className="grid min-h-0 flex-1 max-lg:grid-rows-[48dvh_minmax(0,1fr)] lg:grid-cols-[228px_1fr_368px] lg:grid-rows-[minmax(0,1fr)]">
         <aside
-          className={`border-line bg-surface lg:block lg:border-r ${
+          className={`min-h-0 overflow-hidden border-line bg-surface lg:block lg:border-r ${
             railOpen
               ? "absolute inset-x-0 top-[53px] bottom-0 z-40 overflow-y-auto border-b"
               : "hidden"
@@ -260,7 +260,7 @@ export default function App() {
                 {view ? VIEWS[view].caption : "Custom view. Drag to orbit, scroll to zoom, click a part."}
               </p>
 
-              <div className="pointer-events-none absolute inset-x-3 bottom-3 flex justify-center">
+              <div className="pointer-events-none absolute z-20 flex justify-center max-lg:inset-x-0 max-lg:bottom-0 lg:inset-x-3 lg:bottom-3">
                 <ViewControls
                   explode={explode}
                   onExplode={(v) => {
@@ -307,7 +307,7 @@ export default function App() {
         </aside>
       </div>
 
-      <footer className="shrink-0 border-t border-line bg-surface px-4 py-[6px] text-[0.68rem] leading-snug text-ink3">
+      <footer className="shrink-0 border-t z-[9999] border-line bg-surface px-4 py-[6px] text-[0.68rem] leading-snug text-ink3">
         Geometry generated from measured human anatomy; scene units are millimetres. Vessel
         calibres are exaggerated ~1.8× to stay visible. Educational only — not a diagnosis, and no
         page can examine your eyes.
