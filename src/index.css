@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------
+   Palette drawn from the instruments of an eye exam:
+   exam-room grey, slit-lamp dark room, fundus vermilion (the colour
+   of a retina photographed through a dilated pupil), cobalt filter
+   blue, and sodium-fluorescein green.
+   --------------------------------------------------------------- */
+:root {
+  --tk-ground: #e8ebed;
+  --tk-surface: #fafbfb;
+  --tk-surface2: #f0f3f4;
+  --tk-ink: #12171b;
+  --tk-ink2: #4a555d;
+  --tk-ink3: #78858e;
+  --tk-line: #cdd4d8;
+  --tk-line-soft: #dee4e7;
+  --tk-fundus: #b8351a;
+  --tk-cobalt: #1b4fa0;
+  --tk-fluor: #5f7c14;
+  --tk-amber: #9a6a10;
+  --tk-fundus-wash: #f7e7e2;
+  --tk-cobalt-wash: #e4ebf6;
+  --tk-fluor-wash: #edf1df;
+  --tk-amber-wash: #f7eedc;
+  --tk-on-accent: #fafbfb;
+  color-scheme: light;
+}
+
+.dark {
+  --tk-ground: #0c1014;
+  --tk-surface: #141a20;
+  --tk-surface2: #1b232a;
+  --tk-ink: #e6ebee;
+  --tk-ink2: #94a4b0;
+  --tk-ink3: #6d7c87;
+  --tk-line: #26313a;
+  --tk-line-soft: #1f282f;
+  --tk-fundus: #f0754c;
+  --tk-cobalt: #7faaec;
+  --tk-fluor: #b0d13c;
+  --tk-amber: #dfa548;
+  --tk-fundus-wash: #2a1610;
+  --tk-cobalt-wash: #101c2e;
+  --tk-fluor-wash: #1b2110;
+  --tk-amber-wash: #291d0c;
+  --tk-on-accent: #0c1014;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-ground: var(--tk-ground);
+  --color-surface: var(--tk-surface);
+  --color-surface2: var(--tk-surface2);
+  --color-ink: var(--tk-ink);
+  --color-ink2: var(--tk-ink2);
+  --color-ink3: var(--tk-ink3);
+  --color-line: var(--tk-line);
+  --color-linesoft: var(--tk-line-soft);
+  --color-fundus: var(--tk-fundus);
+  --color-cobalt: var(--tk-cobalt);
+  --color-fluor: var(--tk-fluor);
+  --color-amber: var(--tk-amber);
+  --color-fundus-wash: var(--tk-fundus-wash);
+  --color-cobalt-wash: var(--tk-cobalt-wash);
+  --color-fluor-wash: var(--tk-fluor-wash);
+  --color-amber-wash: var(--tk-amber-wash);
+  --color-on-accent: var(--tk-on-accent);
+
+  --font-display: "Spectral", Georgia, "Times New Roman", serif;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    overflow: hidden;
+    background-color: var(--color-ground);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    text-wrap: balance;
+    line-height: 1.18;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-cobalt);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary { list-style: none; }
+  input[type="range"] { accent-color: var(--color-cobalt); }
+}
+
+@layer utilities {
+  .num { font-variant-numeric: tabular-nums; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-ink3);
+  }
+  .label-cap {
+    font-family: var(--font-mono);
+    font-size: 0.64rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+  .no-scrollbar::-webkit-scrollbar { height: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
