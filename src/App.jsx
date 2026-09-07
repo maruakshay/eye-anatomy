@@ -1,4 +1,5 @@
 import { Suspense, lazy, useCallback, useMemo, useRef, useState } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import EyeScene from "./three/EyeScene.jsx";
 import PathwayScene from "./three/PathwayScene.jsx";
 import { SYSTEMS, buildStructures } from "./three/eyeModel.js";
@@ -317,6 +318,7 @@ export default function App() {
           <Overlay tab={overlay} onTab={setOverlay} onClose={() => setOverlay(null)} />
         </Suspense>
       )}
+      <Analytics />
     </div>
   );
 }
