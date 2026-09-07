@@ -165,6 +165,12 @@ export default function App() {
             Focus &amp; glasses
           </button>
           <button
+            onClick={() => setOverlay("vision")}
+            className="rounded border border-fluor bg-fluor-wash px-[10px] py-[6px] text-[0.78rem] whitespace-nowrap text-ink transition-colors hover:bg-fluor hover:text-on-accent"
+          >
+            Test your vision
+          </button>
+          <button
             onClick={() => setOverlay("flags")}
             className="rounded border border-fundus px-[10px] py-[6px] text-[0.78rem] whitespace-nowrap text-fundus transition-colors hover:bg-fundus hover:text-on-accent"
           >

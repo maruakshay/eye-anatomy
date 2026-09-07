@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import FocusSimulator from "./FocusSimulator.jsx";
 import RedFlags from "./RedFlags.jsx";
+import VisionTest from "./VisionTest.jsx";
 
 const TABS = [
   { id: "optics", label: "Focus & glasses" },
+  { id: "vision", label: "Test your vision" },
   { id: "flags", label: "Red flags" },
 ];
 
@@ -52,7 +54,9 @@ export default function Overlay({ tab, onTab, onClose }) {
         </header>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
-          {tab === "optics" ? (
+          {tab === "vision" ? (
+            <VisionTest />
+          ) : tab === "optics" ? (
             <>
               <p className="mb-4 max-w-[72ch] text-[0.88rem] leading-relaxed text-ink2">
                 Short-sightedness is a mismatch, not a weakness: a globe that grew slightly too
