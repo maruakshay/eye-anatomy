@@ -1,187 +1,135 @@
-# Eye Atlas
+# 👁️ Eye Atlas
 
-An interactive 3D atlas of the human eye, built for explaining things to patients. Orbit it,
-take it apart, cut it in half, look in through the pupil the way an ophthalmoscope does — and
-see the diseases that live in each structure, only when you ask for them.
+An interactive 3D atlas of the human eye, designed as a patient-education tool. Orbit the globe, disassemble its layers, perform a virtual cross-section, or peer through the pupil as if using an ophthalmoscope to explore the diseases associated with each structure.
 
-Two modes:
+![Eye Atlas Preview](public/eye.svg)
 
-- **The eye** — 29 structures including all five circulations, with four preset views
-  (exterior, section, fundus, blood supply alone).
-- **How it sees** — the visual pathway from retina to cortex, with eight lesion sites. Click
-  one and it shows the visual field defect it produces, and why that pattern localises it.
+## ✨ Key Features
 
-Modelled on [ashemag/human-atlas](https://github.com/ashemag/human-atlas), scaled to one organ.
+- **The Eye**: A detailed 3D model featuring 29 structures, including all five vascular circulations.
+- **How it Sees**: An interactive visualization of the visual pathway from retina to cortex, featuring eight lesion sites and their corresponding visual field defects.
+- **Patient-Centric Design**: Integrated disease database and "Red Flag" system that connects anatomical structures to clinical conditions and urgent symptoms.
+- **Vision Screening Suite**: A calibrated set of screening tests (Acuity, Amsler Grid, Contrast, Color, and Astigmatism) that uses a physical reference to ensure precise measurement of visual function on any screen.
+- **Optics Simulator**: A reduced-eye model that simulates refraction, glasses, and accommodative amplitude.
 
-Vite + React 19 + Tailwind v4 + Three.js.
+---
 
-## Run it
+## 🚀 Quick Start
 
+### Run Locally
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm run build    # → dist/
+```
+
+### Build & Preview
+```bash
+npm run build    # Outputs to dist/
 npm run preview
 ```
 
-## Deploy to Vercel
-
-No configuration needed — Vercel autodetects Vite, and `vercel.json` adds the SPA rewrite.
-
+### Deploy to Vercel
+Vercel autodetects Vite. The `vercel.json` is pre-configured for SPA rewrites.
 ```bash
 git init && git add -A && git commit -m "Eye Atlas"
 gh repo create eye-atlas --public --source=. --push
 npx vercel --prod
 ```
 
-By hand: framework **Vite**, build `npm run build`, output `dist`.
+---
 
-## The geometry is generated, not downloaded
+## 🛠️ Technical Deep Dive
 
-The reference project ships 33 MB of compressed BodyParts3D meshes. This one ships none. The eye
-is nearly spherical and radially symmetric, so all 23 structures are built at runtime from
-measured dimensions — sphere bands for the three coats, a steeper spherical cap for the cornea,
-surfaces of revolution for the lens and the fluid compartments, swept tubes for the six
-extraocular muscles.
+### 📐 Procedural Geometry
+Unlike most atlases that ship heavy mesh files, the Eye Atlas generates its geometry at runtime. The eye is nearly spherical and radially symmetric, allowing all structures to be derived from measured anatomical dimensions.
 
-`src/three/dimensions.js` holds every constant and derives the rest, so the model stays
-self-consistent:
+**Why procedural?**
+1. **Performance**: The entire payload is **~248 KB gzipped** (Three.js included), compared to 30MB+ for typical mesh-based atlases.
+2. **Precision**: Surfaces (like the corneal cap and lens) are solved mathematically from their radii, ensuring perfect alignment at the limbus and equator.
+3. **Licensing**: Avoids the "Share-Alike" restrictions of common medical datasets.
 
-| | |
-|---|---|
+| Metric | Value |
+| :--- | :--- |
 | Globe radius | 12.0 mm |
 | Cornea radius of curvature | 7.8 mm, 11.5 mm across |
-| **Derived axial length** | **23.88 mm** (measured average 23.9) |
-| **Derived lens thickness** | **3.53 mm** (measured 3.5–4.0) |
+| **Derived axial length** | **23.88 mm** (Avg: 23.9) |
+| **Derived lens thickness** | **3.53 mm** (Avg: 3.5–4.0) |
 | Rectus insertions | 5.5–7.7 mm behind the limbus |
-| Total | 29 structures, ~231 k triangles |
+| Total Complexity | 29 structures, ~231k triangles |
 
-### Why not an imported model
+### 🩸 Vasculature & Fundus Mapping
+The atlas simulates five distinct circulatory systems, each selectable to explain specific pathologies:
 
-BodyParts3D (which the reference project uses) is CC BY-**SA**, so importing it would put the
-whole project under share-alike — and its eye is a handful of low-poly parts carved out of a
-whole-body scan, coarser than what `dimensions.js` derives here. It also would not have fixed
-what "doesn't look 3D" actually was: a smooth untextured sphere under directional light has
-almost no shading gradient, so it reads as a flat circle no matter how good the mesh is. The fix
-was surface detail and image-based lighting, below.
+- **Retinal Arcades**: Authored in **fundus coordinates** (mm of retinal arc from the fovea) and wrapped onto the sphere.
+- **Central Retinal Vessels**: Modeled as terminal arteries within the optic nerve.
+- **Posterior Ciliary Arteries**: Includes the circle of Zinn-Haller to explain Giant Cell Arteritis.
+- **Vortex Veins**: Oblique exits at the equator.
+- **Episcleral Plexus**: Used to differentiate conjunctivitis from uveitis.
 
-The two lens surfaces meet exactly at the equator, and the corneal cap meets the sclera exactly
-at the limbus, because both are solved from their radii rather than eyeballed. Scene units are
-millimetres throughout. Whole payload: **~248 KB gzipped**, Three.js included.
+*Note: Calibres are exaggerated ~1.8× for visibility, as a real 0.05mm arteriole would be sub-pixel on a 24mm globe.*
 
-## Vasculature
+### 🧠 The Visual Pathway
+The pathway uses color-coding to explain hemifield processing: **Blue** for the left half of the world, **Amber** for the right. This allows users to visualize nasal bundle crossing at the chiasm.
 
-Five circulations, each generated and each separately selectable, because each is the seat of
-its own diseases:
-
-| System | What it explains |
-|---|---|
-| Retinal arteries & veins | The four arcades a fundus exam reads. They sweep around the macula and never cross the fovea — the centre of vision is fed from behind, by the choroid. |
-| Central retinal artery & vein | Inside the optic nerve. A terminal artery with no collateral: ~90 minutes to infarction. |
-| Posterior ciliary arteries | Two long, ~9 short, plus the circle of Zinn-Haller. The vessels giant cell arteritis occludes — which is why it blinds through the disc, not the retina. |
-| Vortex veins | Four at the equator, piercing the sclera obliquely. |
-| Episcleral & conjunctival plexus | Which layer is injected is how you tell conjunctivitis from uveitis. |
-
-Retinal vessels are authored in **fundus coordinates** — millimetres of retinal arc from the
-fovea, the coordinate system fundus anatomy is actually described in — then wrapped onto the
-retinal sphere, so an arcade authored the way it looks in a photograph lands in the right place
-in three dimensions. Branching is a seeded recursive generator, so the same fundus comes back
-every reload; you can point at the same vessel twice.
-
-Calibres are exaggerated ~1.8×. A real arteriole is 0.05 mm across on a 24 mm globe — about one
-pixel, and invisible is not useful. The panel says so.
-
-## How it sees: the visual pathway
-
-The organising fact is that light from the left half of the world lands on the same side of
-*both* retinas, so after the chiasm the brain handles halves of the world, not eyes. Fibres are
-coloured by which hemifield they carry — blue for the left half, amber for the right — so you
-can watch the nasal bundles cross and the two blue bundles arrive in the right tract together.
-
-Eight lesion sites walk up the ladder, each with its field charts:
-
-| Site | Defect | What it tells you |
-|---|---|---|
+| Site | Defect | Clinical Significance |
+| :--- | :--- | :--- |
 | Retina | Monocular altitudinal | Respects the horizontal raphe |
-| Optic nerve | Monocular total | In front of the chiasm |
-| Nerve–chiasm junction | Junctional scotoma | The fellow eye's defect is the clue |
-| Chiasm | Bitemporal hemianopia | At the chiasm — image today |
-| Optic tract | Incongruous homonymous | Behind the chiasm |
-| Temporal lobe | Superior quadrantanopia | Meyer's loop |
-| Parietal lobe | Inferior quadrantanopia | Direct radiation |
+| Optic nerve | Monocular total | Localizes lesion in front of chiasm |
+| Chiasm | Bitemporal hemianopia | Classic "tunnel vision" localization |
+| Optic tract | Incongruous homonymous | Localizes lesion behind the chiasm |
 | Occipital cortex | Congruous, macula spared | Dual blood supply at the pole |
 
-Fields are plotted in space coordinates — chart-left is the left of the world for both eyes —
-so a homonymous defect lines up across both charts and a bitemporal one splays outward.
+### 👓 The Optics Simulator
+Hidden behind "Focus & glasses," this is a **reduced-eye model**:
+- Refraction is collapsed onto one plane 1.6mm behind the corneal apex.
+- Vitreous index: 1.336 | Spectacles distance: 12mm.
+- Reproduces the +43D cornea / +17D lens / +59.6D total of an emmetropic eye.
+- Accommodative amplitude follows Hofstetter's minimum line.
 
-## Rendering
+### 📏 Screen Calibration
+To provide meaningful acuity scores (logMAR/Snellen), the app implements a calibration step. By matching a known physical constant (the 85.6mm width of a standard ID card), the system calculates the exact $\mu m$ per pixel of the user's display, allowing for the rendering of mathematically accurate optotypes at specific viewing distances.
 
-What makes it read as a solid object rather than a disc:
+---
 
-- **Image-based lighting** (`RoomEnvironment` through `PMREMGenerator`), which gives the cornea
-  a real specular highlight. `MeshPhysicalMaterial` with transmission 0.94 and IOR 1.376 — the
-  cornea's actual refractive index — plus a clearcoat, so it looks wet.
-- **Procedural textures** drawn to canvas at load: episcleral vessels and collagen mottling on
-  the sclera; radial striations, crypts and a collarette on the iris, in the iris's own polar
-  coordinate system; choriocapillaris mottling on the choroid; macular xanthophyll; a cupped
-  optic disc.
-- **ACES filmic tone mapping** and soft shadows from the muscles and vessels onto the sclera.
-- The retina is rendered nearly transparent, because it *is* — the orange of a fundus photograph
-  is choroidal blood seen straight through it. That is why the Fundus view looks like a fundus.
+## 🎨 Rendering & Interaction
 
-## Interaction
+### Visual Fidelity
+- **Image-Based Lighting (IBL)**: Uses `RoomEnvironment` and `PMREMGenerator` for realistic corneal specular highlights.
+- **Materials**: `MeshPhysicalMaterial` with transmission (0.94) and IOR (1.376) to simulate the cornea's refractive index.
+- **Procedural Textures**: Dynamic canvas-drawn maps for iris crypts, scleral collagen, and macular xanthophyll.
+- **Tone Mapping**: ACES filmic tone mapping for high-dynamic-range lighting.
 
-- **Drag** to orbit, **scroll** to zoom. It idles with a slow rotation until you touch it.
-- **Click** a structure to select it. Clicking the same spot again steps back through whatever
-  lies behind it — how you get to the iris through the cornea.
-- **Take apart** slides all 23 pieces out along the optical axis.
-- **Section** clips away the near half so you can look inside.
-- **Isolate** shows only the selected piece.
-- **System checkboxes** hide whole coats — the fibrous coat off is the fastest way in.
-- **Preset views** jump to exterior, section, fundus (camera inside the eye at the pupil) or
-  blood supply alone.
-- **Search** spans structures, disease names and symptoms; picking a disease selects the
-  structure it belongs to and opens it.
+### Controls
+- **Orbit/Zoom**: Drag to rotate, scroll to zoom.
+- **Smart Picking**: Clicking the same spot repeatedly steps through overlapping structures (e.g., Cornea $\rightarrow$ Iris).
+- **Explode**: Slides all 23 pieces along the optical axis for internal inspection.
+- **Section**: Clips the near half of the globe.
+- **Search**: Global search across structures, diseases, and symptoms.
 
-## Structure
+---
 
-```
+## 📂 Project Structure
+
+```text
 src/
-  three/dimensions.js     every measurement, and everything derived from it
-  three/eyeModel.js       geometry + materials + the anatomy copy for 29 structures
-  three/vasculature.js    five circulations, generated in fundus coordinates
-  three/textures.js       procedural sclera, iris, choroid, macula, disc maps
-  three/pathway.js        retina → cortex, plus eight lesions and their fields
-  three/EyeScene.jsx      renderer, IBL, orbit, picking, explode, clipping
-  three/PathwayScene.jsx  the pathway scene and its lesion markers
-  data/conditions.js      95 conditions by region and urgency
-  data/structureMap.js    which structure each condition belongs to
-  data/prevention.js      red flags (plus prevention data, currently unused)
-  components/
-    StructureRail.jsx     systems and parts, with disease counts
-    DetailPanel.jsx       the selected structure, and what goes wrong there
-    PathwayRail.jsx  PathwayPanel.jsx  VisualField.jsx
-    SearchBox.jsx  ViewControls.jsx  Overlay.jsx
-    FocusSimulator.jsx    the optics simulator, behind the "Focus & glasses" button
-    RayDiagram.jsx  VisionPreview.jsx  RedFlags.jsx
-  lib/optics.js           reduced-eye optical model
+├── three/
+│   ├── dimensions.js     # Anatomical constants & derivations
+│   ├── eyeModel.js        # Geometry, materials, and anatomy data
+│   ├── vasculature.js     # Fundus-coordinate vessel generation
+│   ├── textures.js        # Procedural map generation
+│   ├── pathway.js         # Visual pathway & lesion field logic
+│   ├── EyeScene.jsx       # Core Three.js renderer & interaction
+│   └── PathwayScene.jsx   # Pathway visualization
+├── data/
+│   ├── conditions.js      # 95 clinical conditions
+│   ├── structureMap.js    # Condition-to-structure mapping
+│   └── prevention.js       # Red flags & prevention data
+├── components/             # UI Rails, Panels, and Overlays
+└── lib/
+    └── optics.js          # Reduced-eye mathematical model
 ```
 
-Content lives only in `data/` and in the structure definitions in `eyeModel.js` — no copy is
-embedded in components.
+## ⚠️ Scope
+**Educational Only.** This tool is not for diagnostic use. It cannot measure intraocular pressure or perform actual retinal scans. Clinical thresholds are provided as orientation for further study.
 
-## The optics simulator
-
-Behind the **Focus & glasses** button, because it answers a different question than the anatomy
-does. It is a real reduced-eye model: refraction collapsed onto one plane 1.6 mm behind the
-corneal apex, vitreous index 1.336, spectacles at 12 mm back-vertex distance. It reproduces the
-+43 D cornea / +17 D lens / +59.6 D total of the standard emmetropic eye and recovers the rule
-that 1 mm of axial length costs about 2.50 D. Accommodative amplitude follows Hofstetter's
-minimum line, so the reading adds it prints are the ones an optometrist writes.
-
-Verified across 5040 parameter combinations for finite renderable output.
-
-## Scope
-
-Educational. Not diagnostic, cannot measure intraocular pressure or see a retina, and clinical
-thresholds vary by country. The "clinical detail" fields are orientation for reading further.
+**Tech Stack**: Vite + React 19 + Tailwind v4 + Three.js
